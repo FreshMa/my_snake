@@ -148,8 +148,7 @@ class Snake{
 
     int move() {
         if (_len == 0) {return -1;}
-        // 鍒ゆ柇瑕佷笉瑕佸悆
-        // 浠庡ご寮€濮嬮噸鏂拌绠�
+
         SnakeBlock* t = new SnakeBlock();
         //printf("cur dir:%d\n", _dir);
 
@@ -174,17 +173,19 @@ class Snake{
                 delete t;
                 return -1;
         }
-
+        
+        // add this node to head
         t->next = _head;
         _head->prev = t;
         _head = t;
 
+        // if it's food, nice, eat it
         if (_food.x != -1 && t->pos.x == _food.x && t->pos.y == _food.y) {
             _food_eaten = true;
             _len++;
             _food.x = -1;
             _food.y = -1;
-        } else {
+        } else { // oops, delete last node
             t = _head;
             while(t && t->next) {
                 t = t->next;
@@ -197,7 +198,7 @@ class Snake{
             _food_eaten = false;
         }
 
-        //妫€娴嬫槸鍚︽湁纰版挒
+        //check if dead
         if (is_hit_self()) {
             printf("hit self, died\n");
             _state = 1;
@@ -248,7 +249,7 @@ class Board{
     }
     ~Board() {
     }
-    // 鏄惁闇€瑕侀噸鏂扮敓鎴愪簨鐗╀綅缃紝濡傛灉涓嶉渶瑕佺殑璇濓紝灏变笉鏇存柊椋熺墿鐨勪綅缃�
+    
     void fill() {
         static bool first = true;
         for (int i = 0; i < _x; ++i) {
@@ -260,31 +261,31 @@ class Board{
 
         SnakeBlock *t = _s->_head;
         while(t) {
-            printf("[SNAKE] x:%d, y:%d\n", t->pos.x, t->pos.y);
+            //printf("[SNAKE] x:%d, y:%d\n", t->pos.x, t->pos.y);
             _board[t->pos.x][t->pos.y] = 1;
             t = t->next;
         }
-
+        
+        // generate food when first gen board or food has beed eaten
         if (first || _s->_food_eaten) {
             Point food = gen_food();
             _s->set_food(food);
             _board[food.x][food.y] = 2;
             first = false;
         }
-
-        show();
     }
 
+    // print current board
     void show() {
         for(int i = 0; i < 50; ++i) {
             printf("\n");
         }
         for (int j = _y-1; j >=0; --j) {
             for (int i=0; i <_x; ++i) {
-                char c = '.';
-                if (_board[i][j] == 1) {
+                char c = '.'; // empty
+                if (_board[i][j] == 1) { // snake
                     c = '0';
-                } else if (_board[i][j] == 2) {
+                } else if (_board[i][j] == 2) { // food
                     c = '*';
                 }
                 printf("%c ", c);
@@ -295,7 +296,7 @@ class Board{
 
     Point gen_food() {
         Point p;
-        // 濡傛灉鏄鐗╃殑璇濓紝闇€瑕佹娴嬶紝涓嶈兘鐢熸垚铔囪韩涓婄殑block
+        // food block should not be one of snake block
         while(1) {
             int x = rand()%_x;
             int y = rand()%_y;
@@ -331,7 +332,7 @@ class Board{
     Snake *_s;
     int _x, _y;
 
-    int _board[1000][1000]; //鏋侀檺鐨勭洏瀛愬ぇ灏�
+    int _board[1000][1000]; 
 };
 
 
