@@ -1,6 +1,7 @@
 #pragma once
 #include <list>
 #include <chrono>
+#include <cstdio>
 
 struct Pos{
     int x;
@@ -55,6 +56,16 @@ private:
             return Pos();
         }
     }
+
+    bool isDirConflict(Direction dir1, Direction dir2) {
+        if (dir1 == Direction::kUp && dir2 == Direction::kDown ||
+            dir1 == Direction::kDown && dir2 == Direction::kUp ||
+            dir1 == Direction::kLeft && dir2 == Direction::kRight ||
+            dir1 == Direction::kRight && dir2 == Direction::kLeft) {
+            return true;
+        }
+        return false;
+    }
 public:
     Snake():cur_dir_(Direction::kNull), 
         last_tail_pos_(Pos()){}
@@ -103,10 +114,7 @@ public:
         }
         
         // 如果冲突，不改变当前行进方向
-        if (dir == Direction::kUp && cur_dir_ == Direction::kDown ||
-            dir == Direction::kDown && cur_dir_ == Direction::kUp ||
-            dir == Direction::kLeft && cur_dir_ == Direction::kRight ||
-            dir == Direction::kRight && cur_dir_ == Direction::kLeft) {
+        if (isDirConflict(dir, cur_dir_)) {
             dir = cur_dir_;
         }
 
@@ -122,15 +130,13 @@ public:
             body_.pop_back();
             body_.emplace_front(head);
         }
+
         cur_dir_ = dir;
         last_move_tp_ = std::chrono::steady_clock::now();
     }
 
     void SetDirection(Direction dir) {
-        if (dir == Direction::kUp && cur_dir_ == Direction::kDown ||
-            dir == Direction::kDown && cur_dir_ == Direction::kUp ||
-            dir == Direction::kLeft && cur_dir_ == Direction::kRight ||
-            dir == Direction::kRight && cur_dir_ == Direction::kLeft) {
+        if (isDirConflict(dir, cur_dir_)) {
             return;
         }
         cur_dir_ = dir;
@@ -139,16 +145,25 @@ public:
     // 是否与自己产生了碰撞
     bool HasCollisionWithSelf() {
         if (body_.size() == 0) return false;
-        Pos& head = body_.front();
-        auto iter = body_.begin();
-        iter++;
+        auto head = body_.begin();
+        auto iter = head;
+        ++iter;
 
-        while(iter++ != body_.end()) {
-            if (iter->x == head.x && iter->y == head.y) {
+        while(iter != body_.end()) {
+            if (iter->x == head->x && iter->y == head->y) {
                 return true;
             }
+            iter++;
         }
         return false;
+    }
+
+    void Show() {
+        /// for debug
+        for(auto it = body_.begin(); it != body_.end(); ++it) {
+            printf("{%d,%d}<-", it->x, it->y);
+        }
+        printf("\n");
     }
 
     // pos是否在蛇身体内

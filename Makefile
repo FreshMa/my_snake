@@ -1,2 +1,2 @@
 all:
-	g++ -o snake play.cc -std=c++11
+	g++ -o snake play.cc -std=c++11 -lpthread

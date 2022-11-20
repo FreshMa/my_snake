@@ -19,7 +19,7 @@ public:
         }
     
     bool HitBoarder(const Pos& p) {
-        if (p.x < 0 || p.x >= width_ || p.y < 0 || p.y >= height_) {
+        if (p.x < 0 || p.x >= height_ || p.y < 0 || p.y >= width_) {
             return true;
         }
         return false;

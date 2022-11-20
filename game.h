@@ -4,7 +4,7 @@
 #include "board.h"
 
 #include <termios.h>
-#include <curses.h>
+//#include <curses.h>
 #include <unistd.h>
 
 #include <vector>
@@ -66,7 +66,7 @@ public:
     
     virtual int Start() {
         Pos init_pos = board_.GenPos();
-        snake_.Init(init_pos);
+        snake_.Init(init_pos, 300);
         board_.GenFood(&snake_);
 
         board_img_.resize(board_.GetHeight());
@@ -98,6 +98,7 @@ public:
         while(1) {
             if (snake_.HasCollisionWithSelf() || board_.HitBoarder(snake_.GetHead())) {
                 printf("YOU DIED, SCORE:%d\n", snake_.Length());
+                snake_.Show();
                 break;
             }
 
@@ -134,7 +135,7 @@ public:
                 board_.GenFood(&snake_);
             }
             // 不需要太实时
-            std::this_thread::sleep_for(std::chrono::milliseconds(100));
+            std::this_thread::sleep_for(std::chrono::milliseconds(50));
         }
         state_.store(0);
     }
@@ -166,8 +167,8 @@ public:
         // 绘制蛇
         std::list<Pos> body = snake_.GetBody();
         for(auto iter:body) {
-            if (iter.x >= 0 && iter.x <= board_.GetHeight() && 
-            iter.y >= 0 && iter.y <= board_.GetWidth()) {
+            if (iter.x >= 0 && iter.x < board_.GetHeight() && 
+            iter.y >= 0 && iter.y < board_.GetWidth()) {
                 board_img_[iter.x][iter.y] = '0';
             }
         }
