@@ -37,7 +37,12 @@ private:
 
     void InputEnterOff() {
         tcgetattr(STDIN_FILENO, &t_);
+        // 读取单个字符
         t_.c_lflag &= ~ICANON;
+        // 关闭回显
+        t_.c_lflag &= ~ECHO;
+        // 隐藏光标
+        printf("\e[?25l");
         tcsetattr(STDIN_FILENO, TCSANOW, &t_);
     }
 
@@ -45,6 +50,8 @@ private:
     {
         tcgetattr(STDIN_FILENO, &t_);
         t_.c_lflag |= ICANON;
+        t_.c_lflag |= ECHO;
+        printf("\e[?25h");
         tcsetattr(STDIN_FILENO, TCSANOW, &t_);
     }
 
@@ -98,7 +105,7 @@ public:
         while(1) {
             if (snake_.HasCollisionWithSelf() || board_.HitBoarder(snake_.GetHead())) {
                 printf("YOU DIED, SCORE:%d\n", snake_.Length());
-                snake_.Show();
+                //snake_.Show();
                 break;
             }
 
@@ -146,9 +153,15 @@ public:
         while (state_.load() == 1)
         {
             // 把旧画面刷下去
+            /*
             for(int i = 0; i < 50; ++i) {
                 printf("\n");
             }
+            */
+            system("clear");
+            printf("SNAKE GAME\n");
+            printf("SCORE: %d\n", snake_.Length());
+            printf("\n");
             DrawFrame();
             std::this_thread::sleep_for(std::chrono::milliseconds(100));
         }
