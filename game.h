@@ -42,7 +42,9 @@ private:
         // 关闭回显
         t_.c_lflag &= ~ECHO;
         // 隐藏光标
+#ifdef HIDE_CURSOR
         printf("\e[?25l");
+#endif
         tcsetattr(STDIN_FILENO, TCSANOW, &t_);
     }
 
@@ -51,7 +53,9 @@ private:
         tcgetattr(STDIN_FILENO, &t_);
         t_.c_lflag |= ICANON;
         t_.c_lflag |= ECHO;
+#ifdef HIDE_CURSOR
         printf("\e[?25h");
+#endif
         tcsetattr(STDIN_FILENO, TCSANOW, &t_);
     }
 
@@ -63,6 +67,10 @@ private:
         FD_ZERO(&fds);
         FD_SET(STDIN_FILENO, &fds);
         return select(1, &fds, NULL, NULL, &tv) > 0;
+    }
+
+    int max(int a, int b) {
+        return a > b?a:b;
     }
 public:
     SnakeGame():state_(0){}
@@ -153,19 +161,43 @@ public:
         while (state_.load() == 1)
         {
             // 把旧画面刷下去
-            /*
-            for(int i = 0; i < 50; ++i) {
-                printf("\n");
-            }
-            */
             system("clear");
-            printf("SNAKE GAME\n");
-            printf("SCORE: %d\n", snake_.Length());
-            printf("\n");
+            DrawTitle();
             DrawFrame();
             std::this_thread::sleep_for(std::chrono::milliseconds(100));
         }
         cv_.notify_one();
+    }
+
+    void DrawTitle() {
+        char buf[1024] = {0};
+        // 1 先输出游戏标题
+        // 计算要有多少个空格
+        const char* title = "SNAKE GAME";
+        int title_len = strlen(title);
+        // 输出界面的时候，每一个.后面都有一个空格，所以实际界面的宽度是height的2倍
+        int space_cnt = max(board_.GetHeight()*2-title_len, 0)/2;
+
+        int i = 0;
+        while(i < space_cnt) {
+            buf[i] = ' ';
+            ++i;
+        }
+        strncpy(buf+i, title, title_len);
+        printf("%s\n", buf);
+
+        // 2 在右侧输出成绩
+        char score_buf[128] = {0};
+        snprintf(score_buf, sizeof(score_buf), "SCORE: %3d", snake_.Length());
+
+        memset(buf, 0, sizeof(buf));
+        space_cnt = board_.GetHeight()*2 - strlen(score_buf) - 1;
+        for(i = 0; i < space_cnt; ++i) {
+            buf[i] = ' ';
+        }
+        strncpy(buf+i,score_buf, strlen(score_buf));
+        printf("%s\n", buf);
+        printf("\n");
     }
 
     void DrawFrame() {
