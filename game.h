@@ -4,8 +4,8 @@
 #include "board.h"
 
 #include <termios.h>
-//#include <curses.h>
 #include <unistd.h>
+#include <string.h>
 
 #include <vector>
 #include <thread>
