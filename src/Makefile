@@ -7,9 +7,9 @@ snake.o:
 board.o:
 	g++ -c ${INC} board.cc $(CCFLAG)
 game.o:
-	g++ -c ${INC} game.cc $(CCFLAG)
+	g++ -c ${INC} -DHIDE_CURSOR game.cc $(CCFLAG)
 
 all: ${OBJ}
-	g++ -o snake ${INC} -DHIDE_CURSOR play.cc ${OBJ} $(CCFLAG) -lpthread
+	g++ -o snake ${INC} play.cc ${OBJ} $(CCFLAG) -lpthread
 clean:
 	rm *.o

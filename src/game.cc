@@ -1,6 +1,5 @@
 #include "game.h"
 
-#include <termios.h>
 #include <unistd.h>
 #include <string.h>
 
@@ -42,6 +41,7 @@ bool SnakeGame::kbhit() {
 }
 int SnakeGame::Start() {
     Pos init_pos = board_.GenPos();
+
     snake_.Init(init_pos, 300);
     board_.GenFood(&snake_);
     board_img_.resize(board_.GetHeight());
@@ -51,21 +51,22 @@ int SnakeGame::Start() {
 
     // 启动游戏
     state_.store(1);
-    // 起一个线程去draw
+    // 起一个线程去绘制界面
     std::thread draw_thread(&SnakeGame::Draw, this);
     draw_thread.detach();
 
-    // 接收键盘操作
+    // 主线程阻塞住，并接收键盘操作，直到死亡
     WaitForKeyboardEvent();
 
     // 退出
     state_.store(0);
-    // 等待draw线程退出
+    // 等待绘制线程退出
     std::unique_lock<std::mutex> lk(mtx_);
     cv_.wait(lk);
     //printf("draw thread exit\n");
     return 0;
 }
+
 void SnakeGame::WaitForKeyboardEvent() {
     while(1) {
         if (snake_.HasCollisionWithSelf() || board_.HitBoarder(snake_.GetHead())) {
@@ -125,6 +126,7 @@ void SnakeGame::Draw() {
     cv_.notify_one();
 }
 
+// 输出游戏标题、成绩等信息
 void SnakeGame::DrawTitle() {
     char buf[1024] = {0};
 
@@ -156,6 +158,8 @@ void SnakeGame::DrawTitle() {
     printf("%s\n", buf);
     printf("\n");
 }
+
+// 绘制界面
 void SnakeGame::DrawFrame() {
     // 先初始化棋盘
     int w = board_.GetWidth();
