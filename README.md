@@ -1,15 +1,15 @@
 # snake game
-自己写的辣鸡贪吃蛇
+toy tool
 
-使用 wasd 来移动
+## operate
+use `wasd` to move
 
-面向对象用的一塌糊涂，参考了这儿的一部分实现：[https://github.com/gogakoreli/snake](https://github.com/gogakoreli/snake)
+## ref
 
-强行使用了一波面向对象,不过目前还有如下缺陷:
-1. 蛇在死亡时界面上的长度会少1个,因为头和墙或者身体发生了碰撞,重合了.这个是好解决的
-2. 闪屏还是有点严重
+thanks to [https://github.com/gogakoreli/snake](https://github.com/gogakoreli/snake)
 
-因为是基于命令行的，所以很简陋：
+## screenshots
+cmd line based, so it's simple
 ```bash
                SNAKE GAME
                              SCORE:  12
@@ -36,3 +36,10 @@
 . . . . . . . . . . . . . . . . . . . . 
 YOU DIED, SCORE:12
 ```
+
+
+## todo
+1. When died, the length of snake in the screen may be shorter by 1 than expected, because the snake head overlaps with body/boarder
+2. When moving snake too quickly, the snake may die unexpectly(press left, up, right quickly, the snake may not respond to up, which caused the self collision)
+3. snake head and body are difficult to distinguish
+
