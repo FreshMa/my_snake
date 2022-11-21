@@ -12,7 +12,8 @@ private:
 };
 
 int main() {
-    SnakeGame sg;
+    // 可以指定地图的宽和高
+    SnakeGame sg(30,20);
     Player p(&sg);
     p.Play();
     return 0;

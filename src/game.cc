@@ -39,6 +39,7 @@ bool SnakeGame::kbhit() {
     FD_SET(STDIN_FILENO, &fds);
     return select(1, &fds, NULL, NULL, &tv) > 0;
 }
+
 int SnakeGame::Start() {
     Pos init_pos = board_.GenPos();
 
@@ -136,7 +137,7 @@ void SnakeGame::DrawTitle() {
     int title_len = strlen(title);
 
     // 输出界面的时候，每一个.后面都有一个空格，所以实际界面的宽度是height的2倍
-    int space_cnt = max(board_.GetHeight()*2-title_len, 0)/2;
+    int space_cnt = max(board_.GetWidth()*2-title_len, 0)/2;
     int i = 0;
     while(i < space_cnt) {
         buf[i] = ' ';
@@ -150,7 +151,7 @@ void SnakeGame::DrawTitle() {
     snprintf(score_buf, sizeof(score_buf), "SCORE: %3d", snake_.Length());
     memset(buf, 0, sizeof(buf));
 
-    space_cnt = board_.GetHeight()*2 - strlen(score_buf) - 1;
+    space_cnt = board_.GetWidth()*2 - strlen(score_buf) - 1;
     for(i = 0; i < space_cnt; ++i) {
         buf[i] = ' ';
     }
@@ -162,10 +163,12 @@ void SnakeGame::DrawTitle() {
 // 绘制界面
 void SnakeGame::DrawFrame() {
     // 先初始化棋盘
+    // 注意这个棋盘中坐标原点是左上角，并且上下方向是x坐标，左右方向是y坐标
+    // 所以width对应y，height对应x
     int w = board_.GetWidth();
     int h = board_.GetHeight();
-    for(int i = 0; i < w; ++i) {
-        for(int j = 0; j < h; ++j) {
+    for(int i = 0; i < h; ++i) {
+        for(int j = 0; j < w; ++j) {
             board_img_[i][j] = '.';
         }
     }
@@ -184,8 +187,8 @@ void SnakeGame::DrawFrame() {
     board_img_[food.x][food.y] = '*';
     
     // 绘制棋盘
-    for(int i = 0; i < w; ++i) {
-        for(int j = 0; j < h; ++j) {
+    for(int i = 0; i < h; ++i) {
+        for(int j = 0; j < w; ++j) {
             printf("%c ", board_img_[i][j]);
         }
         printf("\n");

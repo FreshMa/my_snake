@@ -18,8 +18,8 @@ void Board::GenFood(Snake* s) {
 }
 
 Pos Board::GenPos() {
-     int x = rand()%width_;
-    int y = rand()%height_;
+    int x = rand()%height_;
+    int y = rand()%width_;
     
     Pos pos(x,y);
     return pos;

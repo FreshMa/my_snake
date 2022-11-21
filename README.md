@@ -10,11 +10,15 @@ thanks to [https://github.com/gogakoreli/snake](https://github.com/gogakoreli/sn
 
 ## screenshots
 cmd line based, so it's simple
+
+The upper left corner is the coordinate origin
+
+The x-axis is from top to bottom and the y-axis is from left to right.
+
 ```bash
                SNAKE GAME
                              SCORE:  12
-
-. . . . . . . . . . . . . . . . . . . . 
+. . . . . . . . . . . . . . . . . . . .
 . . . . . . . . . . . . . . . . . . 0 0 
 . . . . . . . . . . . . . . . . . . . 0 
 . . . . . . . . . . . . . . . . . . . 0 

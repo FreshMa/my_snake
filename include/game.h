@@ -57,6 +57,7 @@ private:
     void DrawFrame();
 public:
     SnakeGame():state_(0){}
+    SnakeGame(int w, int h):board_(Board(w,h)), state_(0){}
 
     virtual void ShowUsage() override {
         printf("Usage: use 'wsad' to move the snake\n");
