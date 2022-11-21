@@ -14,7 +14,39 @@
 #include <condition_variable>
 #include <chrono>
 
+// 控制终端的光标展示，字符读取方式等
+class ConsoleGameHelper{
+private:
+    struct termios t_;
+public:
+    ConsoleGameHelper() {
+        tcgetattr(STDIN_FILENO, &t_);
+        // 读取单个字符
+        t_.c_lflag &= ~ICANON;
+        // 关闭回显
+        t_.c_lflag &= ~ECHO;
+        // 隐藏光标
+#ifdef HIDE_CURSOR
+        printf("\e[?25l");
+#endif
+        tcsetattr(STDIN_FILENO, TCSANOW, &t_);
+    }
+
+    ~ConsoleGameHelper()
+    {
+        tcgetattr(STDIN_FILENO, &t_);
+        t_.c_lflag |= ICANON;
+        t_.c_lflag |= ECHO;
+#ifdef HIDE_CURSOR
+        printf("\e[?25h");
+#endif
+        tcsetattr(STDIN_FILENO, TCSANOW, &t_);
+    }
+};
+
 class Game{
+private:
+    ConsoleGameHelper helper_;
 public:
     // 会阻塞在start函数里边
     virtual int Start() = 0;
@@ -32,32 +64,6 @@ private:
 
     using VisableBoard = std::vector<std::vector<char>>;
     VisableBoard board_img_;
-
-    struct termios t_;
-
-    void InputEnterOff() {
-        tcgetattr(STDIN_FILENO, &t_);
-        // 读取单个字符
-        t_.c_lflag &= ~ICANON;
-        // 关闭回显
-        t_.c_lflag &= ~ECHO;
-        // 隐藏光标
-#ifdef HIDE_CURSOR
-        printf("\e[?25l");
-#endif
-        tcsetattr(STDIN_FILENO, TCSANOW, &t_);
-    }
-
-    void InputEnterOn()
-    {
-        tcgetattr(STDIN_FILENO, &t_);
-        t_.c_lflag |= ICANON;
-        t_.c_lflag |= ECHO;
-#ifdef HIDE_CURSOR
-        printf("\e[?25h");
-#endif
-        tcsetattr(STDIN_FILENO, TCSANOW, &t_);
-    }
 
     // 将getchar弄成非阻塞的
     // ref: https://stackoverflow.com/questions/448944/c-non-blocking-keyboard-input
@@ -96,7 +102,6 @@ public:
         draw_thread.detach();
 
         // 接收键盘操作
-        InputEnterOff();
         WaitForKeyboardEvent();
 
         // 退出
@@ -105,7 +110,6 @@ public:
         std::unique_lock<std::mutex> lk(mtx_);
         cv_.wait(lk);
         //printf("draw thread exit\n");
-        InputEnterOn();
         return 0;
     }
 
