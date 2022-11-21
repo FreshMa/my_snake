@@ -72,7 +72,7 @@ public:
 
     void Init(const Pos& pos, 
               int move_intval = 500, 
-              const Direction& dir = Direction::kRight) {
+              const Direction& dir = Direction::kNull) {
         body_.emplace_front(pos);
         move_interval_ = std::chrono::milliseconds(move_intval);
         last_move_tp_ = std::chrono::steady_clock::now();
