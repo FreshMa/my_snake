@@ -1,11 +1,5 @@
 #include "board.h"
 
-bool Board::HitBoarder(const Pos& p) {
-    if (p.x < 0 || p.x >= height_ || p.y < 0 || p.y >= width_) {
-        return true;
-    }
-    return false;
-}
 void Board::GenFood(Snake* s) {
     while(1) {
         Pos new_food = GenPos();

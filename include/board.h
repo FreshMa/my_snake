@@ -17,10 +17,8 @@ public:
         width_(w), 
         height_(h) {
             srand(time(NULL));
-        }
+    }
     
-    bool HitBoarder(const Pos& p);
-
     // 随机生成食物位置，并且要求不能生成在蛇身上
     void GenFood(Snake* s);
     Pos GenPos();
