@@ -43,7 +43,7 @@ bool SnakeGame::kbhit() {
 int SnakeGame::Start() {
     Pos init_pos = board_.GenPos();
 
-    snake_.Init(init_pos, 300);
+    snake_.Init(&board_, init_pos, 300);
     board_.GenFood(&snake_);
     board_img_.resize(board_.GetHeight());
     for(int i =0; i < board_img_.size(); ++i) {
@@ -51,7 +51,6 @@ int SnakeGame::Start() {
     }
 
     // 启动游戏
-    state_.store(1);
     // 起一个线程去绘制界面
     std::thread draw_thread(&SnakeGame::Draw, this);
     draw_thread.detach();
@@ -60,22 +59,14 @@ int SnakeGame::Start() {
     WaitForKeyboardEvent();
 
     // 退出
-    state_.store(0);
     // 等待绘制线程退出
     std::unique_lock<std::mutex> lk(mtx_);
     cv_.wait(lk);
-    //printf("draw thread exit\n");
     return 0;
 }
 
 void SnakeGame::WaitForKeyboardEvent() {
-    while(1) {
-        if (snake_.HasCollisionWithSelf() || board_.HitBoarder(snake_.GetHead())) {
-            printf("YOU DIED, SCORE:%d\n", snake_.Length());
-            //snake_.Show();
-            break;
-        }
-
+    while(snake_.IsAlive()) {
         // 如果按下了键盘，那么读取字符，并设置方向
         if (kbhit()) {
             char c = getchar();
@@ -101,7 +92,7 @@ void SnakeGame::WaitForKeyboardEvent() {
             }
         } 
         // 移动蛇的位置
-        snake_.Move(snake_.GetDirection());
+        snake_.Move();
         
         // 如果蛇与食物相遇，吃掉当前食物，并且重新生成一个
         if (snake_.GetHead() == board_.GetFoodPos()) {
@@ -111,6 +102,7 @@ void SnakeGame::WaitForKeyboardEvent() {
         // 不需要太实时
         std::this_thread::sleep_for(std::chrono::milliseconds(50));
     }
+    printf("YOU DIED, SCORE:%d\n", snake_.Length());
     state_.store(0);
 }
 

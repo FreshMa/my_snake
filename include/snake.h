@@ -2,6 +2,9 @@
 #include <list>
 #include <chrono>
 #include <cstdio>
+#include <queue>
+
+class Board;
 
 struct Pos{
     int x;
@@ -32,7 +35,8 @@ class Snake{
 private:
     // 链表形式保存蛇的身体
     std::list<Pos> body_;
-    // 当前的移动方向
+    // 移动方向队列
+    std::queue<Direction> dir_sequence_;
     Direction cur_dir_;
     // 蛇尾的上一个位置，用于增长长度
     Pos last_tail_pos_;
@@ -41,28 +45,34 @@ private:
     // 蛇上次的移动时间点
     std::chrono::time_point<std::chrono::steady_clock> last_move_tp_;
 
+    Board* board_;
+    bool alive_;
+
     Pos getStepByDir(const Direction& dir);
 
     bool isDirConflict(Direction dir1, Direction dir2);
-public:
-    Snake():cur_dir_(Direction::kNull){}
 
-    void Init(const Pos& pos, 
+public:
+    Snake():cur_dir_(Direction::kNull), alive_(true){}
+
+    void Init(Board* b, const Pos& pos, 
               int move_intval = 500, 
               const Direction& dir = Direction::kNull);
-
-    // 核心方法，移动蛇的位置。具体实现是删除链表尾部的元素，并在头部添加一个元素
-    // 添加元素的位置基于当前头部位置以及方向确定
-    void Move(Direction dir, int step = 1);
-    // 设置蛇的运动方向
+    bool IsAlive() {
+        return alive_;
+    }
+    // 核心方法，控制蛇的移动，更新蛇的身体坐标
+    void Move();
+    // 设置蛇的运动方向，实际是向方向队列中添加一个合法的方向
     void SetDirection(Direction dir);
-    // 是否与自己产生了碰撞
-    bool HasCollisionWithSelf();
+    // 当蛇头移动到这个位置时，是否会与自己产生碰撞
+    bool WillHitSelf(const Pos& head);
+    // 当蛇头移动到这个位置时，是否会碰到地图边缘
+    bool WillHitBoarder(const Pos& head);
     // 输出蛇的坐标
     void Show();
     // pos是否在蛇身体内
     bool IsFoodInSnake(const Pos& food);
-
     // 获取当前蛇头所在的位置
     Pos GetHead() const {
         return body_.front();

@@ -7,10 +7,10 @@
 
 #include <vector>
 #include <thread>
-#include <atomic>
 #include <mutex>
 #include <condition_variable>
 #include <chrono>
+#include <atomic>
 
 // 控制终端的光标展示，字符读取方式等
 class ConsoleGameHelper{
@@ -36,9 +36,9 @@ private:
     Snake snake_;
     Board board_;
 
-    std::atomic<int> state_;
     std::mutex mtx_;
     std::condition_variable cv_;
+    std::atomic<int> state_;
 
     using VisableBoard = std::vector<std::vector<char>>;
     VisableBoard board_img_;
@@ -56,8 +56,8 @@ private:
     void DrawTitle();
     void DrawFrame();
 public:
-    SnakeGame():state_(0){}
-    SnakeGame(int w, int h):board_(Board(w,h)), state_(0){}
+    SnakeGame():state_(1){}
+    SnakeGame(int w, int h):board_(Board(w,h)), state_(1){}
 
     virtual void ShowUsage() override {
         printf("Usage: use 'wsad' to move the snake\n");
