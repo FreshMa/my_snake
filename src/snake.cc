@@ -27,13 +27,6 @@ bool Snake::isDirConflict(Direction dir1, Direction dir2) {
     return false;
 }
 
-void Snake::Flashback() {
-    if (body_.empty() || last_tail_pos_.x == -1) return;
-
-    body_.pop_front();
-    body_.push_back(last_tail_pos_);
-}
-
 void Snake::Init(Board* b, const Pos& pos, int move_intval, const Direction& dir) {
     board_ = b;
     body_.emplace_front(pos);
