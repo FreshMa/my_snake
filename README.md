@@ -43,7 +43,7 @@ YOU DIED, SCORE:12
 
 
 ## todo
-1. When died, the length of snake in the screen may be shorter by 1 than expected, because the snake head overlaps with body/boarder
-2. When moving snake too quickly, the snake may die unexpectly(press left, up, right quickly, the snake may not respond to up, which caused the self collision)
+1. [FIXED] When died, the length of snake in the screen may be shorter by 1 than expected, because the snake head overlaps with body/boarder
+2. [FIXED] When moving snake too quickly, the snake may die unexpectly(press left, up, right quickly, the snake may not respond to up, which caused the self collision)
 3. snake head and body are difficult to distinguish
 
