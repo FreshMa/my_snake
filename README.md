@@ -1,6 +1,9 @@
 # snake game
 toy tool
 
+## build & run
+make && ./src/snake
+
 ## operate
 use `wasd` to move
 
